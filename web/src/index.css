@@ -10,21 +10,25 @@ body{margin:0;color:#1b1b1b;font-size:1rem}
 .app{min-height:100dvh;background:#fff}
 .conteudo{position:relative;z-index:1;min-height:100dvh}
 
-/* Abertura: saudação grande direto sobre a imagem; botão principal no centro exato da tela. */
-.inicio{position:relative;min-height:calc(100dvh - 3.2rem);padding:1.5rem 1rem}
-.inicio__fundo{position:fixed;inset:0;z-index:-1;width:100%;height:100%;object-fit:cover;object-position:4% 50%}
-.inicio__titulo{display:flex;flex-direction:column;margin:0;color:#111;font-family:"Arial Narrow",Impact,Arial,sans-serif;
-  text-shadow:0 0 6px #fff,0 0 14px #fff,0 0 24px #fff,0 2px 0 #fff,0 -2px 0 #fff,2px 0 0 #fff,-2px 0 0 #fff}
-.inicio__pre{font-size:clamp(1.5rem,6.5vw,2.4rem);font-weight:700;line-height:1.1}
-.inicio__nome{font-size:clamp(3.5rem,19vw,8.5rem);font-style:italic;font-weight:900;line-height:.95;text-transform:uppercase}
-.inicio__acoes{position:fixed;top:50%;left:50%;translate:-50% -50%;z-index:2}
-.btn-novo{display:block;min-height:4rem;padding:0 2.25rem;border:.2rem solid #fff;border-radius:999px;background:var(--preto);color:var(--amarelo);white-space:nowrap;
-  font:italic 900 1.5rem/1 "Arial Narrow",Impact,Arial,sans-serif;letter-spacing:.03em;text-transform:uppercase;box-shadow:0 8px 20px rgb(0 0 0/.35);transition:scale .15s}
-.btn-novo:active{scale:.96}
-.inicio__abaixo{position:absolute;top:100%;left:50%;translate:-50% 0;display:grid;justify-items:center;gap:.4rem;margin-top:.6rem}
-.inicio__ou{padding:.05rem .8rem;border-radius:999px;background:#fff;color:#111;font-weight:700;font-size:.95rem;box-shadow:0 2px 6px rgb(0 0 0/.2)}
-.btn-clientes{min-width:12rem;font-weight:700;box-shadow:0 4px 12px rgb(0 0 0/.2)}
-@media (min-width:768px){.inicio__fundo{object-position:center}}
+/* Abertura: arte em tela cheia e um único botão amarelo liso, centralizado na horizontal e logo abaixo do logo da arte (que fica no meio da imagem). */
+.inicio{position:fixed;inset:0;max-width:none;overflow:hidden;background:#111}
+.inicio__fundo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.btn-novo{position:absolute;top:57%;left:50%;translate:-50% 0;width:min(86vw,22rem);min-height:4.25rem;border:0;border-radius:999px;
+  background:var(--amarelo);color:#111;font:800 1.35rem/1 system-ui,sans-serif;letter-spacing:.02em;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:.6rem;box-shadow:0 0 1.6rem .35rem rgb(255 212 0/.55)}
+.btn-novo__mais{color:#fff;font-size:2rem;font-weight:700;line-height:1;text-shadow:0 0 3px rgb(0 0 0/.55)}
+/* Computador: botão mais abaixo do logo e alinhado a ele */
+@media (min-width:768px) and (orientation:landscape){.btn-novo{top:65%;left:32%}}
+.btn-novo:active{background:#e6bf00}
+
+/* Sugestões de cliente (combobox) */
+.cliente-campo{position:relative}
+.cliente-campo__lista{position:absolute;z-index:20;left:.75rem;right:.75rem;margin:.25rem 0 0;padding:.35rem;list-style:none;background:#fff;border:1px solid #cfd2d8;border-radius:1rem;box-shadow:0 10px 24px rgb(0 0 0/.22)}
+.cliente-campo__lista li{display:flex;flex-direction:column;padding:.6rem .75rem;border-radius:.75rem;cursor:pointer}
+.cliente-campo__lista li.ativo{background:color-mix(in srgb,var(--destaque) 22%,#fff)}
+.cliente-campo__lista small{color:#555}
+.cliente-status{font-size:.9rem;font-weight:600;color:#444}
+.cliente-status--ok{color:#146c2e}
 .titulo-pilula{display:inline-block;margin-bottom:.75rem;padding:.35rem 1rem;border-radius:999px;background:#fff;box-shadow:0 2px 8px rgb(0 0 0/.12)}
 :focus-visible{outline:3px solid #ff7a00;outline-offset:2px}
 .pular{position:absolute;left:.5rem;top:.5rem;z-index:10;padding:.5rem 1rem;background:#fff;color:#000}
@@ -78,3 +82,14 @@ legend{font-weight:800}
   main{max-width:720px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Pesquisar cliente */
+.btn-pesquisar{display:flex;align-items:center;justify-content:center;gap:.6rem;border:2px solid #111;font-weight:800;box-shadow:0 6px 18px rgb(0 0 0/.18)}
+.janela-clientes{width:min(92vw,32rem);max-height:80dvh;margin:auto;padding:1.25rem;border:0;border-radius:1.5rem;box-shadow:0 20px 50px rgb(0 0 0/.45)}
+.janela-clientes[open]{display:flex;flex-direction:column}
+.janela-clientes::backdrop{background:rgb(0 0 0/.6)}
+.janela-clientes__topo{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:.75rem}
+.janela-clientes__lista{flex:1;min-height:0;margin:0;padding:0;overflow-y:auto;list-style:none;display:grid;gap:.5rem}
+.janela-clientes__lista button{display:flex;flex-direction:column;align-items:flex-start;width:100%;min-height:3.25rem;padding:.65rem .9rem;border:1px solid #cfd2d8;border-radius:1rem;background:#fff;text-align:left}
+.janela-clientes__lista button:hover,.janela-clientes__lista button:focus-visible{background:color-mix(in srgb,var(--destaque) 22%,#fff)}
+.janela-clientes__lista small{color:#555}

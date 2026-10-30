@@ -1,5 +1,4 @@
 import { useCallback, useRef, useState } from 'react'
-import { ClientesTela } from './components/ClientesTela'
 import { FundoTinta } from './components/FundoTinta'
 import { Inicio } from './components/Inicio'
 import { OrcamentoForm } from './components/OrcamentoForm'
@@ -7,30 +6,23 @@ import { listarClientes, type Cliente } from './lib/clientes'
 import { TEMAS, type Tipo } from './lib/types'
 import { useDepoisDoPaint } from './lib/useDepoisDoPaint'
 
-type Tela = 'inicio' | 'novo' | 'clientes'
+type Tela = 'inicio' | 'novo'
 
 const ABAS: Tipo[] = ['PINTURA', 'GESSO']
-const NOME = 'Paulo'
 
 export default function App() {
   const [tela, setTela] = useState<Tela>('inicio')
   const [ativa, setAtiva] = useState<Tipo>('PINTURA')
   const [clientes, setClientes] = useState<Cliente[]>([])
-  const [carregando, setCarregando] = useState(false)
-  const [erroClientes, setErroClientes] = useState<string | null>(null)
   const pronto = useDepoisDoPaint()
   const botoes = useRef<Record<Tipo, HTMLButtonElement | null>>({ GESSO: null, PINTURA: null })
 
   // Só busca clientes quando a pessoa sai do início (a abertura não faz nenhuma requisição).
   const carregarClientes = useCallback(async () => {
-    setCarregando(true)
     try {
       setClientes(await listarClientes())
-      setErroClientes(null)
-    } catch (e) {
-      setErroClientes((e as Error).message)
-    } finally {
-      setCarregando(false)
+    } catch {
+      // Sem a lista só não há sugestões; o orçamento continua funcionando.
     }
   }, [])
 
@@ -56,22 +48,18 @@ export default function App() {
       {pronto && tela !== 'inicio' && <FundoTinta key={tema} />}
       <div className="conteudo">
         <a href="#conteudo" className="visually-hidden-focusable pular">Pular para o conteúdo</a>
-        <header className="topo">
-          <h1 className="marca">P7 <span>PINTURAS</span></h1>
-          {tela !== 'inicio' ? (
+        {/* A abertura é só a arte + os dois botões, sem cabeçalho. */}
+        {tela !== 'inicio' && (
+          <header className="topo">
+            <h1 className="marca">P7 <span>PINTURAS</span></h1>
             <button type="button" className="btn btn-sm btn-outline-light" onClick={() => setTela('inicio')}>
               ← Início
             </button>
-          ) : (
-            <p className="mb-0 small">Início</p>
-          )}
-        </header>
-
-        {tela === 'inicio' && <Inicio nome={NOME} onNovo={() => ir('novo')} onClientes={() => ir('clientes')} />}
-
-        {tela === 'clientes' && (
-          <ClientesTela clientes={clientes} carregando={carregando} erro={erroClientes} onMudou={carregarClientes} />
+          </header>
         )}
+
+        {tela === 'inicio' && <Inicio onNovo={() => ir('novo')} />}
+
 
         {/* Fica montado (só oculto) para não perder o que foi digitado ao voltar ao início. */}
         <div hidden={tela !== 'novo'}>

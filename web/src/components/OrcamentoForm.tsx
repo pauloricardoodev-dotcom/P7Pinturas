@@ -3,7 +3,9 @@ import { FolhaOrcamento } from './FolhaOrcamento'
 import { salvarOrcamento, subtotalDe, totalDe } from '../lib/api'
 import { arredonda, hojeISO, moeda, num } from '../lib/format'
 import { compartilharFolha } from '../lib/share'
-import { salvarCliente, type Cliente } from '../lib/clientes'
+import { ClienteCampo } from './ClienteCampo'
+import { PesquisarCliente } from './PesquisarCliente'
+import { atualizarCliente, salvarCliente, type Cliente } from '../lib/clientes'
 import { itemVazio, MAX_ITENS, TEMAS, type Dados, type Item, type Tipo } from '../lib/types'
 
 const PASSO = 10 // ajuste rápido (±) do valor sugerido, em reais
@@ -57,16 +59,46 @@ export function OrcamentoForm({ tipo, clientes, onClienteSalvo }: Props) {
   }, [previa])
 
   const [salvarCli, setSalvarCli] = useState(true)
+  const [msgCli, setMsgCli] = useState<{ tipo: 'erro' | 'ok'; msg: string } | null>(null)
   const nomeDigitado = d.cliente.trim().toLowerCase()
   const clienteExistente = clientes.find((c) => c.nome.toLowerCase() === nomeDigitado)
 
-  // Escolheu um cliente cadastrado (datalist): preenche o resto do cabeçalho.
-  const mudaCliente = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nome = e.target.value
+  const dadosCliente = () => ({
+    nome: d.cliente.trim(), telefone: d.telefone.trim(), email: d.email.trim(),
+    endereco: d.endereco.trim(), cidade: d.cidade.trim(), bairro: d.bairro.trim(),
+  })
+  const mudouCadastro = !!clienteExistente && (
+    clienteExistente.telefone !== d.telefone.trim() || clienteExistente.email !== d.email.trim() ||
+    clienteExistente.endereco !== d.endereco.trim() || clienteExistente.cidade !== d.cidade.trim() ||
+    clienteExistente.bairro !== d.bairro.trim())
+
+  // Escolheu uma sugestão: traz o cadastro todo para o cabeçalho do orçamento.
+  const escolheCliente = (c: Cliente) => {
+    setMsgCli(null)
+    setD((p) => ({ ...p, cliente: c.nome, telefone: c.telefone, email: c.email, endereco: c.endereco, cidade: c.cidade, bairro: c.bairro }))
+  }
+
+  // Digitou o nome por inteiro de alguém cadastrado: completa só o que ainda está vazio.
+  const mudaNomeCliente = (nome: string) => {
+    setMsgCli(null)
     const c = clientes.find((x) => x.nome.toLowerCase() === nome.trim().toLowerCase())
     setD((p) => c
-      ? { ...p, cliente: c.nome, telefone: c.telefone, email: c.email, endereco: c.endereco, cidade: c.cidade, bairro: c.bairro }
+      ? {
+        ...p, cliente: nome, telefone: p.telefone || c.telefone, email: p.email || c.email,
+        endereco: p.endereco || c.endereco, cidade: p.cidade || c.cidade, bairro: p.bairro || c.bairro,
+      }
       : { ...p, cliente: nome })
+  }
+
+  const cadastrarAgora = async () => {
+    try {
+      if (clienteExistente) await atualizarCliente(clienteExistente.id, dadosCliente())
+      else await salvarCliente(dadosCliente())
+      onClienteSalvo()
+      setMsgCli({ tipo: 'ok', msg: clienteExistente ? 'Cadastro do cliente atualizado.' : 'Cliente cadastrado.' })
+    } catch (e) {
+      setMsgCli({ tipo: 'erro', msg: (e as Error).message })
+    }
   }
 
   const campo = (k: keyof Dados) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -109,10 +141,7 @@ export function OrcamentoForm({ tipo, clientes, onClienteSalvo }: Props) {
       await salvarOrcamento(d)
       if (salvarCli && !clienteExistente) {
         // Cadastrar o cliente é um extra: se falhar, o orçamento segue normalmente.
-        await salvarCliente({
-          nome: d.cliente.trim(), telefone: d.telefone.trim(), email: d.email.trim(),
-          endereco: d.endereco.trim(), cidade: d.cidade.trim(), bairro: d.bairro.trim(),
-        }).then(onClienteSalvo, () => undefined)
+        await salvarCliente(dadosCliente()).then(onClienteSalvo, () => undefined)
       }
       await compartilharFolha(folhaRef.current!, d, total)
       setEstado({ tipo: 'ok', msg: 'Orçamento salvo e pronto para enviar.' })
@@ -152,25 +181,29 @@ export function OrcamentoForm({ tipo, clientes, onClienteSalvo }: Props) {
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); abrirPrevia() }} noValidate className="mt-3">
+      <div className="mb-3"><PesquisarCliente clientes={clientes} onEscolher={escolheCliente} /></div>
+
       <fieldset className="card card-body mb-3">
         <legend className="h5">Cliente</legend>
         <div className="row g-3">
-          <Campo id={`${id}-cli`} label="Cliente" valor={d.cliente} onChange={mudaCliente} autoComplete="off" obrigatorio
-            lista={`${id}-clientes`} />
-          <datalist id={`${id}-clientes`}>
-            {clientes.map((c) => <option key={c.id} value={c.nome} />)}
-          </datalist>
-          {clientes.length > 0 && !clienteExistente && (
-            <p className="col-12 form-text mt-0 mb-0">Digite para buscar um cliente cadastrado.</p>
-          )}
-          {clienteExistente && (
-            <p className="col-12 form-text mt-0 mb-0" role="status">Cliente cadastrado: dados preenchidos.</p>
+          <ClienteCampo id={`${id}-cli`} valor={d.cliente} clientes={clientes} onTexto={mudaNomeCliente} onEscolher={escolheCliente} />
+          <div className="col-12" aria-live="polite">
+            {clienteExistente && <p className="cliente-status cliente-status--ok mb-0">✔ Cliente já cadastrado</p>}
+            {!clienteExistente && d.cliente.trim() && <p className="cliente-status mb-0">Cliente novo — ainda não cadastrado</p>}
+            {msgCli && <p className={`cliente-status ${msgCli.tipo === 'ok' ? 'cliente-status--ok' : 'text-danger'} mb-0`} role={msgCli.tipo === 'erro' ? 'alert' : undefined}>{msgCli.msg}</p>}
+          </div>
+          {d.cliente.trim() && (!clienteExistente || mudouCadastro) && (
+            <div className="col-12 d-grid">
+              <button type="button" className="btn btn-outline-dark" onClick={cadastrarAgora}>
+                {clienteExistente ? 'Atualizar cadastro do cliente' : 'Cadastrar cliente'}
+              </button>
+            </div>
           )}
           {d.cliente.trim() && !clienteExistente && (
             <div className="col-12 form-check ms-1">
               <input id={`${id}-salvacli`} type="checkbox" className="form-check-input" checked={salvarCli}
                 onChange={(e) => setSalvarCli(e.target.checked)} />
-              <label htmlFor={`${id}-salvacli`} className="form-check-label">Cadastrar este cliente para os próximos orçamentos</label>
+              <label htmlFor={`${id}-salvacli`} className="form-check-label">Cadastrar automaticamente ao enviar o orçamento</label>
             </div>
           )}
           <Campo id={`${id}-end`} label="Endereço" valor={d.endereco} onChange={campo('endereco')} autoComplete="street-address" />
@@ -268,16 +301,15 @@ interface CampoProps {
   type?: string
   inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']
   autoComplete?: string
-  lista?: string
   col?: string
   obrigatorio?: boolean
 }
 
-function Campo({ id, label, valor, onChange, type = 'text', inputMode, autoComplete, lista, col = 'col-12', obrigatorio }: CampoProps) {
+function Campo({ id, label, valor, onChange, type = 'text', inputMode, autoComplete, col = 'col-12', obrigatorio }: CampoProps) {
   return (
     <div className={col}>
       <label htmlFor={id} className="form-label">{label}{obrigatorio && <span aria-hidden="true"> *</span>}</label>
-      <input id={id} type={type} inputMode={inputMode} autoComplete={autoComplete} list={lista} required={obrigatorio}
+      <input id={id} type={type} inputMode={inputMode} autoComplete={autoComplete} required={obrigatorio}
         step={type === 'number' ? 'any' : undefined} min={type === 'number' ? 0 : undefined}
         className="form-control" value={valor} onChange={onChange} />
     </div>

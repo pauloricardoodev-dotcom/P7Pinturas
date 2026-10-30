@@ -1,28 +1,15 @@
-interface Props {
-  nome: string
-  onNovo: () => void
-  onClientes: () => void
-}
-
-export function Inicio({ nome, onNovo, onClientes }: Props) {
+export function Inicio({ onNovo }: { onNovo: () => void }) {
   return (
     <main id="conteudo" className="inicio">
-      {/* Decorativa; fetchpriority alto porque é o maior elemento da tela. */}
-      <img className="inicio__fundo" src="/fundo-inicio.webp" alt="" width={1983} height={793} fetchPriority="high" decoding="async" />
+      <h1 className="visually-hidden">P7 Pinturas – Início</h1>
 
-      <h2 className="inicio__titulo">
-        <span className="inicio__pre">Bem-vindo de volta,</span>
-        <span className="inicio__nome">{nome}!</span>
-      </h2>
+      {/* Decorativo. Tela em pé recebe a arte vertical; tela larga, o banner. fetchpriority alto: é o maior elemento. */}
+      <picture>
+        <source media="(max-width: 767.98px), (orientation: portrait)" srcSet="/fundo-mobile.webp" width={940} height={1672} />
+        <img className="inicio__fundo" src="/fundo-desktop.webp" alt="" width={1672} height={940} fetchPriority="high" decoding="async" />
+      </picture>
 
-      {/* O botão principal fica no centro exato da tela; "ou" + Clientes ficam logo abaixo. */}
-      <div className="inicio__acoes">
-        <button type="button" className="btn-novo" onClick={onNovo}>Novo Orçamento</button>
-        <div className="inicio__abaixo">
-          <span className="inicio__ou" aria-hidden="true">ou</span>
-          <button type="button" className="btn btn-light btn-clientes" onClick={onClientes}>Clientes</button>
-        </div>
-      </div>
+      <button type="button" className="btn-novo" onClick={onNovo}><span className="btn-novo__mais" aria-hidden="true">+</span>Novo Orçamento</button>
     </main>
   )
 }
