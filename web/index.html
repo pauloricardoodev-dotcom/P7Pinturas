@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111111" />
+    <meta name="description" content="Gerador de orçamentos de pintura e reparo de gesso da P7 Pinturas." />
+    <title>P7 Pinturas – Orçamentos</title>
+    <link rel="preload" as="image" href="/fundo-inicio.webp" type="image/webp" fetchpriority="high" />
+    <!-- Tela de carregamento embutida: pinta no primeiro frame, antes do JS -->
+    <style>
+      #splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;background:#111;color:#ffd400;font:italic 900 2.5rem/1 "Arial Narrow",Impact,Arial,sans-serif;letter-spacing:.02em}
+      #splash small{display:block;color:#fff;font:600 .8rem/1.2 system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase}
+      #splash i{width:2.5rem;height:.3rem;border-radius:.15rem;background:linear-gradient(90deg,#ffd400 50%,#0b5fd8 50%);animation:sp 1s ease-in-out infinite alternate}
+      @keyframes sp{to{transform:scaleX(.3)}}
+      @media (prefers-reduced-motion:reduce){#splash i{animation:none}}
+    </style>
+  </head>
+  <body>
+    <div id="splash" role="status" aria-live="polite">
+      <div>P7 PINTURAS<small>Carregando…</small></div>
+      <i aria-hidden="true"></i>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

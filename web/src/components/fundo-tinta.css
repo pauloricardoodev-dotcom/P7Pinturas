@@ -1,0 +1,61 @@
+.fundo-tinta{--ciclo:18s;position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#fff}
+.folha-tinta{position:absolute;inset:0;will-change:transform}
+
+/* ---------- 1) tinta colorida desce e cobre a tela ---------- */
+.folha-tinta--cor{--f:var(--destaque);--b:color-mix(in srgb,var(--destaque) 80%,#000);--dobra-clara:rgb(255 255 255/.5);--dobra-escura:rgb(0 0 0/.22);
+  background:var(--f);animation:cor-desce var(--ciclo) infinite both}
+/* faixa de sombra: dá espessura à tinta perto da beirada */
+.folha-tinta--cor::before{content:"";position:absolute;left:0;right:0;bottom:0;height:150px;
+  background:linear-gradient(to bottom,transparent,rgb(0 0 0/.11) 62%,transparent)}
+
+/* ---------- 2) tinta branca sobe de baixo para cima ---------- */
+.folha-tinta--branca{--f:#fff;--b:rgb(0 0 0/.2);--dobra-clara:rgb(255 255 255/1);--dobra-escura:rgb(0 0 0/.13);
+  background:var(--f);animation:branca-sobe var(--ciclo) infinite both}
+.folha-tinta--branca::before{content:"";position:absolute;left:0;right:0;top:0;height:150px;
+  background:linear-gradient(to top,transparent,rgb(0 0 0/.09) 62%,transparent)}
+
+/* ---------- beirada ---------- */
+.borda{position:absolute;left:0;right:0;top:calc(100% - 2px);height:0}
+.borda--cima{top:2px;transform:scaleY(-1);transform-origin:top} /* espelha: a borda fica em cima */
+
+.onda{position:absolute;left:0;top:0;width:calc(100% + var(--w));will-change:transform;animation:onda-x 8s linear infinite}
+.onda--tras{top:6px;animation-duration:11s}
+.onda--reversa{animation-direction:reverse}
+.onda svg{display:block}
+.onda--frente .onda__massa{fill:var(--f)}
+.onda--tras .onda__massa{fill:var(--b)}
+.dobra{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.dobra--clara{stroke:var(--dobra-clara);stroke-width:3}
+.dobra--escura{stroke:var(--dobra-escura);stroke-width:5}
+
+/* respingos arremessados à frente da beirada */
+.respingos{position:absolute;inset:0 0 auto 0;height:0;animation:respingos-cor var(--ciclo) infinite both}
+.borda--cima .respingos{animation-name:respingos-branca}
+.respingo{position:absolute;top:30px;border-radius:50% 50% 50% 50%/62% 62% 38% 38%;background:var(--f);opacity:0;
+  animation:respingo 1.5s cubic-bezier(.2,.7,.3,1) infinite}
+.folha-tinta--cor .respingo{box-shadow:inset -2px -2px 0 rgb(0 0 0/.15)}
+.folha-tinta--branca .respingo{box-shadow:0 0 0 1px rgb(0 0 0/.12)}
+
+@keyframes onda-x{to{transform:translateX(calc(var(--w) * -1))}}
+
+@keyframes cor-desce{
+  0%{transform:translateY(calc(-100% - 340px));animation-timing-function:cubic-bezier(.45,.05,.3,1)}
+  40%,100%{transform:translateY(0)}
+}
+@keyframes branca-sobe{
+  0%,50%{transform:translateY(calc(100% + 220px));animation-timing-function:cubic-bezier(.45,.05,.3,1)}
+  88%,100%{transform:translateY(0)}
+}
+@keyframes respingos-cor{0%,4%{opacity:0}6%,36%{opacity:1}40%,100%{opacity:0}}
+@keyframes respingos-branca{0%,52%{opacity:0}54%,84%{opacity:1}88%,100%{opacity:0}}
+@keyframes respingo{
+  0%{transform:translate(0,0) scale(.2);opacity:0;animation-timing-function:cubic-bezier(.1,.8,.3,1)}
+  14%{transform:translate(calc(var(--dx) * .55),calc(var(--dy) * .55)) scale(1);opacity:1;animation-timing-function:cubic-bezier(.5,0,.9,.6)}
+  100%{transform:translate(var(--dx),calc(var(--dy) + 120px)) scale(.7);opacity:0}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .folha-tinta,.onda,.respingos,.respingo{animation:none}
+  .folha-tinta--cor{transform:translateY(calc(-100% + 150px))}
+  .respingos,.folha-tinta--branca{display:none}
+}

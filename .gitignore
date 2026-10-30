@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.tsbuildinfo
+*.log
+.env*
+.DS_Store
+
+# banco local (dados de clientes e orçamentos)
+api/data/
+
+# folhas de exemplo com dados reais de cliente (repositório público)
+modeloOrcamento/

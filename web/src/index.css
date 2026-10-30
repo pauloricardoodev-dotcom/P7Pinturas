@@ -1,0 +1,80 @@
+/* Cores com contraste AA: texto escuro sobre amarelo, texto claro sobre azul. */
+:root{--preto:#111;--amarelo:#ffd400;--azul:#0b5fd8}
+[data-tema=gesso]{--destaque:var(--azul);--sobre-destaque:#fff}
+[data-tema=pintura]{--destaque:var(--amarelo);--sobre-destaque:#111}
+
+/* Cantos bem arredondados em todo o formulário (variáveis do Bootstrap). */
+:root{--bs-border-radius:1rem;--bs-border-radius-sm:.75rem;--bs-border-radius-lg:1.5rem}
+
+body{margin:0;color:#1b1b1b;font-size:1rem}
+.app{min-height:100dvh;background:#fff}
+.conteudo{position:relative;z-index:1;min-height:100dvh}
+
+/* Abertura: saudação grande direto sobre a imagem; botão principal no centro exato da tela. */
+.inicio{position:relative;min-height:calc(100dvh - 3.2rem);padding:1.5rem 1rem}
+.inicio__fundo{position:fixed;inset:0;z-index:-1;width:100%;height:100%;object-fit:cover;object-position:4% 50%}
+.inicio__titulo{display:flex;flex-direction:column;margin:0;color:#111;font-family:"Arial Narrow",Impact,Arial,sans-serif;
+  text-shadow:0 0 6px #fff,0 0 14px #fff,0 0 24px #fff,0 2px 0 #fff,0 -2px 0 #fff,2px 0 0 #fff,-2px 0 0 #fff}
+.inicio__pre{font-size:clamp(1.5rem,6.5vw,2.4rem);font-weight:700;line-height:1.1}
+.inicio__nome{font-size:clamp(3.5rem,19vw,8.5rem);font-style:italic;font-weight:900;line-height:.95;text-transform:uppercase}
+.inicio__acoes{position:fixed;top:50%;left:50%;translate:-50% -50%;z-index:2}
+.btn-novo{display:block;min-height:4rem;padding:0 2.25rem;border:.2rem solid #fff;border-radius:999px;background:var(--preto);color:var(--amarelo);white-space:nowrap;
+  font:italic 900 1.5rem/1 "Arial Narrow",Impact,Arial,sans-serif;letter-spacing:.03em;text-transform:uppercase;box-shadow:0 8px 20px rgb(0 0 0/.35);transition:scale .15s}
+.btn-novo:active{scale:.96}
+.inicio__abaixo{position:absolute;top:100%;left:50%;translate:-50% 0;display:grid;justify-items:center;gap:.4rem;margin-top:.6rem}
+.inicio__ou{padding:.05rem .8rem;border-radius:999px;background:#fff;color:#111;font-weight:700;font-size:.95rem;box-shadow:0 2px 6px rgb(0 0 0/.2)}
+.btn-clientes{min-width:12rem;font-weight:700;box-shadow:0 4px 12px rgb(0 0 0/.2)}
+@media (min-width:768px){.inicio__fundo{object-position:center}}
+.titulo-pilula{display:inline-block;margin-bottom:.75rem;padding:.35rem 1rem;border-radius:999px;background:#fff;box-shadow:0 2px 8px rgb(0 0 0/.12)}
+:focus-visible{outline:3px solid #ff7a00;outline-offset:2px}
+.pular{position:absolute;left:.5rem;top:.5rem;z-index:10;padding:.5rem 1rem;background:#fff;color:#000}
+
+.topo{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;background:var(--preto);color:#fff}
+.marca{margin:0;font:italic 900 1.6rem/1 "Arial Narrow",Impact,Arial,sans-serif;color:var(--amarelo)}
+.marca span{color:#fff;font-size:1rem}
+
+.abas{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:1fr 1fr;background:var(--preto);box-shadow:0 2px 6px rgb(0 0 0/.25)}
+.abas button{min-height:3rem;border:0;border-bottom:.3rem solid transparent;background:transparent;color:#fff;font-weight:800;font-size:1.05rem;text-transform:uppercase;letter-spacing:.04em}
+.abas button[aria-selected=true][data-tipo=gesso]{background:var(--azul);border-color:#fff}
+.abas button[aria-selected=true][data-tipo=pintura]{background:var(--amarelo);color:#111;border-color:#111}
+.abas button[aria-selected=false]{opacity:.85}
+
+[role=tabpanel]{padding:0 .75rem}
+fieldset{min-width:0;border:0;padding:0}
+legend{font-weight:800}
+.card{border-color:#d7d9de;border-radius:1.5rem;box-shadow:0 6px 18px rgb(0 0 0/.1)}
+.card.card-body{padding:1.25rem}
+.form-control{border-radius:1rem}
+.btn{border-radius:1rem}
+.btn-sm{border-radius:.75rem}
+/* botões vazados ficam sobre a tinta: precisam de fundo próprio para ter contraste */
+.btn-outline-dark{background:#fff}
+.input-group>.btn:first-child{border-radius:1rem 0 0 1rem}
+.input-group>.btn:last-child{border-radius:0 1rem 1rem 0}
+.input-group>.form-control{border-radius:0}
+.resumo{overflow:hidden;border-radius:1.25rem}
+.resumo div{border-left:0;border-right:0}
+.badge-destaque{border-radius:999px}
+.alert{border-radius:1rem}
+.form-label{margin-bottom:.25rem;font-weight:600}
+.form-control{min-height:2.75rem}
+.form-control:focus{border-color:var(--destaque);box-shadow:0 0 0 .2rem color-mix(in srgb,var(--destaque) 35%,transparent)}
+.badge-destaque{padding:.2rem .6rem;border-radius:.3rem;background:var(--destaque);color:var(--sobre-destaque)}
+.btn{min-height:2.75rem}
+.btn-destaque{background:var(--destaque);color:var(--sobre-destaque);border:0;font-weight:800}
+.btn-destaque:hover,.btn-destaque:focus-visible{background:var(--destaque);color:var(--sobre-destaque);filter:brightness(.92)}
+.btn-destaque:disabled{background:var(--destaque);color:var(--sobre-destaque);opacity:.65}
+.ajuste{min-width:3.25rem;font-size:1.4rem;font-weight:800}
+
+.resumo div{display:flex;justify-content:space-between;padding:.5rem .75rem;border:1px solid #cfd2d8}
+.resumo div+div{border-top:0}
+.resumo dt,.resumo dd{margin:0}
+.resumo__total{background:var(--destaque);color:var(--sobre-destaque);font-weight:900;font-size:1.2rem}
+
+.previa{overflow:hidden;border:1px solid #cfd2d8;border-radius:1.5rem;background:#fff;box-shadow:0 6px 18px rgb(0 0 0/.12)}
+
+@media (min-width:768px){
+  [role=tabpanel]{padding:0}
+  main{max-width:720px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
